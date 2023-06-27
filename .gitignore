@@ -1,0 +1,13 @@
+.vs
+
+ContractManagement.BusinessLogic/bin
+ContractManagement.BusinessLogic/obj
+
+ContractManagement.DataAccess/bin
+ContractManagement.DataAccess/obj
+
+ContractManagement.UnitTest/bin
+ContractManagement.UnitTest/obj
+
+ContractManagement.WebApi/bin
+ContractManagement.WebApi/obj
