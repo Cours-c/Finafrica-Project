@@ -43,6 +43,13 @@ builder.Services.AddSingleton<IScheduler>(provider =>
     return scheduler;
 });
 
+//CONFIGURATION DE LA PERSISTANCE DE DONNEE POUR QUARTZ
+builder.Services.AddQuartz(q =>
+{
+    q.UseMicrosoftDependencyInjectionScopedJobFactory();
+  
+});
+
 builder.Services.AddScoped<IContractRepository, ContractRepository>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IMailService, MailKitService>();
