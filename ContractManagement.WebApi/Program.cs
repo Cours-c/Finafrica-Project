@@ -43,28 +43,6 @@ builder.Services.AddSingleton<IScheduler>(provider =>
     return scheduler;
 });
 
-//Etape 2 Enregistrer le service EnvoiContractsJobService en tant que service Scoped
-builder.Services.AddScoped<EnvoiContractsJobService>();
-//Etape 3 Configurer les travaux et les déclencheurs 
-builder.Services.AddQuartz(q =>
-{
-    q.UseMicrosoftDependencyInjectionScopedJobFactory();
-
-    // Configuration du travail EnvoiContractsJobService
-    var jobKey = new JobKey("EnvoiContractsJobService");
-    q.AddJob<EnvoiContractsJobService>(jobOpts =>
-        jobOpts.WithIdentity(jobKey)
-            .StoreDurably());
-
-    // Configuration du déclencheur
-    q.AddTrigger(triggerOpts =>
-    triggerOpts.ForJob(jobKey)
-        .WithIdentity("EmailJobTrigger")
-        .WithSimpleSchedule(scheduleOpts =>
-            scheduleOpts.WithIntervalInMinutes(1)
-                .RepeatForever()));  // Planifie l'exécution chaque 1 min
-});
-
 builder.Services.AddScoped<IContractRepository, ContractRepository>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IMailService, MailKitService>();

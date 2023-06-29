@@ -25,34 +25,43 @@ namespace ContractManagement.WebApi.Controllers
             return Ok("okkkkkkkkk");
         }
 
-        [HttpPost("schedule")]
-        public async Task <IActionResult> SheduleEmails()
+        [HttpPost("schedule-emails")]
+        public async Task<IActionResult> ScheduleEmails()
         {
             try
             {
-                var contracts = await _contractService.GetContractsByDueDateAsync(7, CancellationToken.None);
-                // planification du travail EnvoieEmailJob avec les contrats récupérer
-                var jobDataMap = new JobDataMap();
-                jobDataMap["Contracts"] = contracts;
                 var jobKey = new JobKey("EnvoiContractsJobService");
                 var triggerKey = new TriggerKey("EmailJobTrigger");
 
+                // Vérifier si le travail existe déjà
+                if (await _scheduler.CheckExists(jobKey))
+                {
+                    return BadRequest("Le travail d'envoi d'e-mails est déjà planifié.");
+                }
+
+                // Créer le travail et le déclencheur
                 var jobDetail = JobBuilder.Create<EnvoiContractsJobService>()
                     .WithIdentity(jobKey)
-                    .UsingJobData(jobDataMap)
                     .Build();
+
                 var trigger = TriggerBuilder.Create()
                     .WithIdentity(triggerKey)
                     .StartNow()
+                    .WithSimpleSchedule(x => x.WithIntervalInMinutes(1).RepeatForever())
                     .Build();
-                _scheduler.ScheduleJob(jobDetail, trigger);
-                return Ok("Planification email ok");
-            } 
+
+                // Planifier le travail
+                await _scheduler.ScheduleJob(jobDetail, trigger);
+
+                return Ok("L'envoi d'e-mails a été planifié avec succès.");
+            }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Une erreur s'est produite lors de la planification des e-mails : {ex.Message}");
+                return StatusCode(500, $"Une erreur s'est produite lors de la planification de l'envoi d'e-mails : {ex.Message}");
             }
         }
-
     }
+
+
 }
+
