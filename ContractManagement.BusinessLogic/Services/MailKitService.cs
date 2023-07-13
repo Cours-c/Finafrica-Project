@@ -18,41 +18,6 @@ namespace ContractManagement.BusinessLogic.Services
             _configuration = configuration;
         }
     
-        //public async Task SendEmailAsync(string recipient, string subject, string body, CancellationToken cancellationToken)
-        //{
-
-        //    var emailSettings = _configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
-        //    var message = new MimeMessage();
-        //    message.From.Add(MailboxAddress.Parse(emailSettings.SenderEmail));
-        //    message.To.Add(MailboxAddress.Parse(recipient));
-        //    message.Subject = subject;
-        //    message.Body = new TextPart(TextFormat.Html)
-        //    {
-        //        Text = body
-        //    };
-
-        //    using (var client = new SmtpClient())
-        //    {
-        //        try
-        //        {
-        //            //await client.ConnectAsync(emailSettings.SmtpServer, emailSettings.SmtpPort, emailSettings.EnableSsl, cancellationToken);
-        //            await client.ConnectAsync(emailSettings.SmtpServer, emailSettings.SmtpPort, SecureSocketOptions.SslOnConnect, cancellationToken);;
-
-
-        //            if (!string.IsNullOrEmpty(emailSettings.Username) && !string.IsNullOrEmpty(emailSettings.Password))
-        //            {
-        //                await client.AuthenticateAsync(new NetworkCredential(emailSettings.Username, emailSettings.Password), cancellationToken);
-        //            }
-
-        //            await client.SendAsync(message, cancellationToken);
-        //        }
-        //        finally
-        //        {
-        //            await client.DisconnectAsync(true, cancellationToken);
-        //        }
-        //    }
-        //}
-
         public async Task SendEmailAsync(string recipient, string subject, string body, CancellationToken cancellationToken)
         {
             var emailSettings = _configuration.GetSection("SmtpSettings").Get<SmtpSettings>();

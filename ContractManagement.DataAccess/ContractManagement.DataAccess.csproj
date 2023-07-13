@@ -9,6 +9,8 @@
   <ItemGroup>
     <PackageReference Include="MongoDB.Bson" Version="2.19.2" />
     <PackageReference Include="MongoDB.Driver" Version="2.19.2" />
+    <PackageReference Include="quartz.impl.mongodb" Version="1.3.1" />
+    <PackageReference Include="Quartz.MongoDB" Version="0.1.5" />
   </ItemGroup>
 
 </Project>

@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-//DataBaseSettings
+//CONFIGURATION DE LA BASE DE DONNEE MONGO
 builder.Services.Configure<DataBaseSettings>(builder.Configuration.GetSection("CrontactManagement"));
 var dbSettings = builder.Configuration.GetSection("CrontactManagement").Get<DataBaseSettings>();
 builder.Services.AddSingleton<IMongoClient>(_ =>
