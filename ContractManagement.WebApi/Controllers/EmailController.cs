@@ -11,6 +11,7 @@ namespace ContractManagement.WebApi.Controllers
         private readonly IMailService _emailService;
         private readonly IContractService _contractService;
         private readonly IScheduler _scheduler;
+
         public EmailController( IContractService contractService , IScheduler scheduler , IMailService emailService)
         {
             _emailService = emailService;

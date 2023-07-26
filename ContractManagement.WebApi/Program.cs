@@ -10,8 +10,7 @@ using Quartz.Simpl;
 using Microsoft.Extensions.Options;
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-//CONFIGURATION DE LA BASE DE DONNEE MONGO
+//CONFIGURATION DE LA BASE DE DONNEE MONGODB
 builder.Services.Configure<DataBaseSettings>(builder.Configuration.GetSection("CrontactManagement"));
 var dbSettings = builder.Configuration.GetSection("CrontactManagement").Get<DataBaseSettings>();
 builder.Services.AddSingleton<IMongoClient>(_ =>
@@ -26,11 +25,12 @@ builder.Services.AddSingleton<IMongoDatabase>(x =>
     return client.GetDatabase(dbSettings.DataBaseName);
 }
 );
+
 //CONFIGURATION POUR LE SERVEUR SMTP
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 
 //CONFIGURATION DE QUARTZ
-// Étape 1 : Ajouter les services Quartz.NET
+//  Ajout des services Quartz.NET
 builder.Services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
 builder.Services.AddSingleton<IScheduler>(provider =>
 {
@@ -42,27 +42,30 @@ builder.Services.AddSingleton<IScheduler>(provider =>
     scheduler.JobFactory = new MicrosoftDependencyInjectionJobFactory(provider, provider.GetRequiredService<IOptions<QuartzOptions>>());
     return scheduler;
 });
-
-//CONFIGURATION DE LA PERSISTANCE DE DONNEE POUR QUARTZ
-builder.Services.AddQuartz(q =>
+void ConfigureServices(IServiceCollection service)
 {
-    q.UseMicrosoftDependencyInjectionScopedJobFactory();
-  
-});
+    service.AddTransient<IContractService, ContractService>();
+    service.AddTransient<ISendPendingEmails, SendPendingEmails>();
+    service.AddHostedService<EnvoiContractsJobService>();
+}
 
 builder.Services.AddScoped<IContractRepository, ContractRepository>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IMailService, MailKitService>();
-
+builder.Services.AddScoped<ISendPendingEmails, SendPendingEmails>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//Injection du service de planification d'envoi d'email pour qu'il soit exécuter au démmerrage de l'application
+
+
 var app = builder.Build();
 
-//Etape 4 Démarrer le scheduler et planifier le travail
+//Démarrerage du scheduler et  planification du travail
 var scheduler = builder.Services.BuildServiceProvider().GetService<IScheduler>();
 await scheduler.Start();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
